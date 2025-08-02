@@ -1,6 +1,6 @@
 name: "HAOS Swap Enabler"
 description: "Enable swap partition on block devices for Home Assistant OS"
-version: "1.0.2"
+version: "1.0.3"
 slug: "haos_swap_enabler"
 arch:
   - aarch64
@@ -17,10 +17,6 @@ full_access: true
 privileged:
   - SYS_ADMIN
   - SYS_RAWIO
-  - MKNOD
-  - DAC_OVERRIDE
-devices:
-  - /dev
 options:
   device: "/dev/sdb"
   auto_discover: true

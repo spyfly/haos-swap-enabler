@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2025-08-03
+
+### Fixed
+- Removed conflicting device access configuration (full_access + devices)
+- Fixed invalid capabilities (MKNOD, DAC_OVERRIDE) to use only allowed ones
+- Simplified privilege configuration to use only SYS_ADMIN and SYS_RAWIO
+- Resolved Home Assistant Supervisor validation warnings
+
+### Changed
+- Streamlined configuration to use full_access for complete system access
+- Removed redundant device mappings when using full_access
+
 ## [1.0.2] - 2025-08-03
 
 ### Fixed
