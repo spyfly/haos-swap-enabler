@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2025-08-03
+
+### Fixed
+- Updated devices configuration format to use new list-only format
+- Fixed image configuration to use proper build system
+- Added build.yaml for multi-architecture support
+- Corrected Dockerfile ARG handling
+
+### Changed
+- Improved Home Assistant Supervisor compatibility
+- Updated base image references
+
 ## [1.0.0] - 2025-08-03
 
 ### Added
