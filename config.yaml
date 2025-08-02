@@ -14,9 +14,13 @@ startup: once
 boot: auto
 hassio_api: true
 privileged:
+  - NET_ADMIN
   - SYS_ADMIN
+  - SYS_RAWIO
+  - SYS_TIME
+  - SYS_NICE
 devices:
-  - /dev
+  - /dev/mem
 options:
   device: "/dev/sdb"
   auto_discover: true
