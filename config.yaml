@@ -1,0 +1,30 @@
+name: "HAOS Swap Enabler"
+description: "Enable swap partition on block devices for Home Assistant OS"
+version: "1.0.0"
+slug: "haos_swap_enabler"
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+init: false
+stage: stable
+startup: once
+boot: auto
+hassio_api: true
+privileged:
+  - SYS_ADMIN
+devices:
+  - /dev:/dev:rwm
+options:
+  device: "/dev/sdb"
+  auto_discover: true
+  create_partition: false
+  priority: 10
+schema:
+  device: str
+  auto_discover: bool
+  create_partition: bool
+  priority: int(1,32767)?
+image: ghcr.io/hassio-addons/base:{arch}-13.1.4
