@@ -64,6 +64,22 @@ create_swap_partition() {
   local device=$1
   print_date "Creating swap partition on $device..."
   
+  # Check device permissions and accessibility
+  print_date "Checking device accessibility..."
+  if [[ ! -r "$device" ]]; then
+    print_date "ERROR: Cannot read device $device"
+    ls -la "$device" 2>/dev/null || print_date "Device $device not found in filesystem"
+    return 1
+  fi
+  
+  if [[ ! -w "$device" ]]; then
+    print_date "ERROR: Cannot write to device $device"
+    ls -la "$device"
+    return 1
+  fi
+  
+  print_date "Device $device is accessible"
+  
   # Check if device has existing partitions
   local existing_parts
   existing_parts=$(lsblk -rno NAME "$device" | tail -n +2 | wc -l)
@@ -77,8 +93,23 @@ create_swap_partition() {
   
   # Create a single partition that uses the entire device
   print_date "Creating partition table and swap partition..."
-  parted -s "$device" mklabel gpt
-  parted -s "$device" mkpart primary linux-swap 0% 100%
+  print_date "Running: parted -s $device mklabel gpt"
+  if ! parted -s "$device" mklabel gpt; then
+    print_date "ERROR: Failed to create partition table on $device"
+    print_date "Checking device status:"
+    lsblk "$device" || true
+    blkid "$device" || true
+    return 1
+  fi
+  
+  print_date "Running: parted -s $device mkpart primary linux-swap 0% 100%"
+  if ! parted -s "$device" mkpart primary linux-swap 0% 100%; then
+    print_date "ERROR: Failed to create partition on $device"
+    return 1
+  fi
+  
+  # Wait for partition to appear
+  sleep 2
   
   # Get the new partition name
   local partition="${device}1"
@@ -89,6 +120,8 @@ create_swap_partition() {
   
   if [[ ! -b "$partition" ]]; then
     print_date "ERROR: Failed to create partition on $device"
+    print_date "Expected partition: $partition or ${device}p1"
+    lsblk "$device"
     return 1
   fi
   
@@ -96,7 +129,10 @@ create_swap_partition() {
   
   # Create swap filesystem
   print_date "Creating swap filesystem on $partition..."
-  mkswap "$partition"
+  if ! mkswap "$partition"; then
+    print_date "ERROR: Failed to create swap filesystem on $partition"
+    return 1
+  fi
   
   print_date "Swap partition created successfully: $partition"
   echo "$partition"
@@ -142,9 +178,15 @@ main() {
   print_date "  Create partition: $CREATE_PARTITION"
   print_date "  Priority: $PRIORITY"
   
+  # Show system information for debugging
+  print_date "System information:"
+  print_date "  User: $(whoami)"
+  print_date "  Groups: $(groups)"
+  print_date "  Capabilities: $(capsh --print 2>/dev/null | grep Current || echo 'capsh not available')"
+  
   # Show current swap status
   print_date "Current swap status:"
-  if swapon -s | grep -v "Filename"; then
+  if swapon -s | grep -v "Filename" | grep -v "^$"; then
     swapon -s
   else
     print_date "  No swap currently enabled"
