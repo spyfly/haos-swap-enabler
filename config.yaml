@@ -10,7 +10,7 @@ arch:
   - i386
 init: false
 stage: stable
-startup: once
+startup: services
 boot: auto
 hassio_api: true
 full_access: true
